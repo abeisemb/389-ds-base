@@ -214,6 +214,21 @@ def change_conf_attr(topology_st, suffix, attr_name, attr_value):
         entry.replace(attr_name, attr_value)
     return attr_value_bck
 
+def isolate_substring(full_str, start_str, end_str):
+    """Extract and return a specific substring from full_str that is located
+    between start_str and end_str. A helper function for 
+    test_multi_suffix_search(), abstracted out for readability. 
+
+    Returns the desired substring, or None if start_str or 
+    end_str cannot be found in full_str.
+    """
+    if (full_str.find(start_str) and full_str.find(end_str)):
+        first_index = full_str.find(start_str)+len(start_str)
+        final_index = full_str.find(end_str)
+        return full_str[first_index:final_index]
+    else:
+        return None
+
 
 def paged_search(conn, suffix, controls, search_flt, searchreq_attrlist, abandon_rate=0):
     """Search at the DEFAULT_SUFFIX with ldap.SCOPE_SUBTREE
@@ -1127,7 +1142,7 @@ def test_multi_suffix_search(topology_st, create_user, new_suffixes):
 
         access_log_lines = topology_st.standalone.ds_access_log.match('.*pr_cookie=.*')
         # Sort access_log_lines by op number to mitigate race condition effects. 
-        access_log_lines.sort(key=lambda x: (int(x[x.find("op=")+3:x.find(" RESULT")])))
+        access_log_lines.sort(key=lambda x: int(isolate_substring(x, "op=", " RESULT")))
         pr_cookie_list = ([line.rsplit('=', 1)[-1] for line in access_log_lines])
         pr_cookie_list = [int(pr_cookie) for pr_cookie in pr_cookie_list]
         log.info('Assert that last pr_cookie == -1 and others pr_cookie == 0')
