@@ -219,15 +219,11 @@ def isolate_substring(full_str, start_str, end_str):
     between start_str and end_str. A helper function for 
     test_multi_suffix_search(), abstracted out for readability. 
 
-    Returns the desired substring, or None if start_str or 
-    end_str cannot be found in full_str.
+    Returns the desired substring. 
     """
-    if (full_str.find(start_str) and full_str.find(end_str)):
-        first_index = full_str.find(start_str)+len(start_str)
-        final_index = full_str.find(end_str)
-        return full_str[first_index:final_index]
-    else:
-        return None
+    first_index = full_str.index(start_str)+len(start_str)
+    final_index = full_str.index(end_str)
+    return full_str[first_index:final_index]
 
 
 def paged_search(conn, suffix, controls, search_flt, searchreq_attrlist, abandon_rate=0):
